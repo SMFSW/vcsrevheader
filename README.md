@@ -8,7 +8,7 @@ Version Control Sytem rev to header file
 - %2 = VCS local copy include path
 - %3 = project name
 
-In eclipse project, set a new builder
+In eclipse project, you can set a new builder (from an external tool for re-use)
 
 - Location: "${workspace_loc:/${project_name}/vcsrevheader.bat}"
 - Working dir: ${workspace_loc:/${project_name}}
@@ -24,6 +24,25 @@ In eclipse project, set a new builder
 
 - Only for local copies, if trying to launch the script from a full repository (including different projects), it won't work
 
+- Not implemented for GIT yet
+
+## Release Notes
+
+v1.1:
+
+- Refactored script:
+  - not using different app name than set (-1 var)
+  - using common variable for output header
+  - subroutine for separator
+  - Console displayed blank lines
+  - %3 param shall never have space in name (never using %~3)
+- svnversion is not used anymore, yet more informations gather
+- variables for other VCS app generated accordingly
+- Displaying all defines from generated header before exit
+
+V1.0:
+
+- initial release using svnversion (for subversion if executable found)
 
 ## Misc
 
@@ -32,7 +51,6 @@ Feel free to share your thoughts @ xgarmanboziax@gmail.com about:
 - issues encountered (might also raise issue on github directly)
 - optimisations
 - improvements & new functionalities
-
 
 ## License
 
