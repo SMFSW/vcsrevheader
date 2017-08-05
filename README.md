@@ -28,6 +28,10 @@ In eclipse project, you can set a new builder (from an external tool for re-use)
 
 ## Release Notes
 
+v1.2:
+
+- Ensure find & findstr commands are windows ones
+
 v1.1:
 
 - Refactored script:
@@ -36,6 +40,7 @@ v1.1:
   - subroutine for separator
   - Console displayed blank lines
   - %3 param shall never have space in name (never using %~3)
+  - delete/generate output header after getting infos (lets the possibility to keep the latest file in place in some cases: eg. no connection with repo)
 - svnversion is not used anymore, yet more informations gather
 - variables for other VCS app generated accordingly
 - Displaying all defines from generated header before exit

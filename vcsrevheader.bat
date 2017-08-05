@@ -1,5 +1,5 @@
 :: name: vcsrevheader.bat
-:: version: 1.1
+:: version: 1.2
 :: author: SMFSW
 :: copyright: MIT (c) 2017 SMFSW
 
@@ -7,13 +7,6 @@
 :: %1 = VCS local copy path
 :: %2 = VCS local copy include path
 :: %3 = project name
-
-:: In eclipse project, set a new builder
-:: Location: "${workspace_loc:/${project_name}/vcsrevheader.bat}"
-:: Working dir: ${workspace_loc:/${project_name}}
-:: Arguments: "${workspace_loc:/${project_name}}" "${workspace_loc:/${project_name}/Inc}" ${project_name}
-:: Refresh the project containing the selected resource
-:: Run the builder after a clean, during manual and auto builds
 
 :: Known Compatibility Issues:
 :: - May cause issues if msys toolset is found in windows path (when launched using cmd as described below)
@@ -52,17 +45,6 @@ SET outheader="%~2\vcsrev_%3.h"
 SET vcsrev=
 SET updrev=
 
-:: Delete previously generated file
-DEL "%outheader%"
-IF %errorlevel% neq 0 (
-	ECHO No Previous vcsrev_%3.h found, generating header...
-) ELSE (
-	ECHO Deleting vcsrev_%3.h, generating new header...
-)
-ECHO // This is an automated generated file for project %3, please do not edit> %outheader%
-ECHO // Generated: %date% @%time%>> %outheader%
-ECHO.>> %outheader%
-
 :: Go to the beginning of main script
 GOTO :BEGIN
 
@@ -79,7 +61,7 @@ FOR %%e IN (%PATHEXT%) DO (
 		)
 	)
 )
-:TEST_VCS
+GOTO :TEST_VCS
 EXIT /B
 
 :: Test if VCS var is defined
@@ -140,8 +122,8 @@ CALL :SEEK_VCS
 :: Retrieve informations from local copy
 IF "%name%"=="svn" (
 	"%VCS%" info -r BASE> vcsrev.tmp
-	FOR /f "tokens=2 delims==:" %%a IN ('find "Last Changed Rev:" ^< vcsrev.tmp') DO SET vcsrev=%%a
-	FOR /f "tokens=2 delims==:" %%a IN ('find "Revision:" ^< vcsrev.tmp') DO SET updrev=%%a
+	FOR /f "tokens=2 delims==:" %%a IN ('%windir%\system32\find "Last Changed Rev:" ^< vcsrev.tmp') DO SET vcsrev=%%a
+	FOR /f "tokens=2 delims==:" %%a IN ('%windir%\system32\find "Revision:" ^< vcsrev.tmp') DO SET updrev=%%a
 	rem svnversion> revision.tmp
 	rem SET /p vcsrev=< revision.tmp
 ) ELSE IF "%name%"=="git" (
@@ -157,12 +139,23 @@ IF "%name%"=="svn" (
 :: Remove temporary files
 DEL *.tmp
 
+:: Delete previously generated file
+DEL "%outheader%"
+IF %errorlevel% neq 0 (
+	ECHO No Previous vcsrev_%3.h found, generating header...
+) ELSE (
+	ECHO Deleting vcsrev_%3.h, generating new header...
+)
+
 :: Write to header file
+ECHO // This is an automated generated file for project %3, please do not edit> %outheader%
+ECHO // Generated: %date% @%time%>> %outheader%
+ECHO.>> %outheader%
 ECHO #define VCSREV_%3 "%3: %name% proj%vcsrev% / repo%updrev%">> %outheader%
 
-:: Write to header and display informations
+:: Display informations
 CALL :SEP
-findstr "#define.*" %outheader%
+%windir%\system32\findstr "#define.*" %outheader%
 CALL :SEP
 
 
